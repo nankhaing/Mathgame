@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Math Game Level</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fffdf5;
+      padding: 20px;
+      text-align: center;
+    }
+    .box {
+      max-width: 500px;
+      margin: auto;
+      background: #f4f4f8;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 30px;
+      margin-bottom: 20px;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .timer {
+      font-size: 24px;
+      color: #e74c3c;
+      margin-bottom: 10px;
+    }
+    input {
+      font-size: 24px;
+      padding: 10px;
+      width: 100px;
+      margin: 10px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: box-shadow 0.3s ease;
+    }
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 8px #3498db;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #2980b9;
+    }
+    .score {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    /* Confetti container */
+    #confetti-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 9999;
+    }
+    /* Confetti animation */
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(300px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    /* Shake animation for wrong answer */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+    .shake {
+      animation: shake 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2 id="greeting"></h2>
+    <div class="timer" id="timer">⏱️ 10</div>
+    <div class="question" id="questionText">?</div>
+    <input id="answerInput" type="number" autocomplete="off" />
+    <br />
+    <button id="submitBtn" onclick="submitAnswer()">Submit</button>
+    <div class="score" id="scoreDisplay">Score: 0 / 0</div>
+  </div>
+
+  <div id="confetti-container"></div>
+
+  <audio id="correctSound" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
+  <audio id="wrongSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+
+  <script>
+    const name = localStorage.getItem('math_player') || "Player";
+    const level = parseInt(localStorage.getItem('math_level') || "1");
+
+    document.getElementById("greeting").textContent = `Hello ${name} - Level ${level}`;
+
+    let score = 0;
+    let total = 0;
+    let currentAnswer = 0;
+    let timer = 10;
+    let timerInterval;
+
+    const questionTextEl = document.getElementById("questionText");
+    const answerInputEl = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateQuestion() {
+      // Fade out question
+      questionTextEl.style.opacity = 0;
+
+      setTimeout(() => {
+        let a = getRandom(1, 10);
+        let b = getRandom(1, 10);
+        let text = "";
+        switch (level) {
+          case 1: currentAnswer = a + b; text = `${a} + ${b}`; break;
+          case 2: currentAnswer = a - b; text = `${a} - ${b}`; break;
+          case 3:
+            if (Math.random() < 0.5) { currentAnswer = a + b; text = `${a} + ${b}`; }
+            else { currentAnswer = a - b; text = `${a} - ${b}`; }
+            break;
+          case 4: currentAnswer = a * b; text = `${a} × ${b}`; break;
+          case 5:
+            const ops = ["+", "-", "*"];
+            const op = ops[getRandom(0, 2)];
+            if (op === "+") { currentAnswer = a + b; text = `${a} + ${b}`; }
+            if (op === "-") { currentAnswer = a - b; text = `${a} - ${b}`; }
+            if (op === "*") { currentAnswer = a * b; text = `${a} × ${b}`; }
+            break;
+          case 6:
+            currentAnswer = a;
+            let result = a * b;
+            text = `${result} ÷ ${b}`;
+            break;
+        }
+        questionTextEl.textContent = text;
+        questionTextEl.style.opacity = 1;
+        answerInputEl.value = "";
+        answerInputEl.focus();
+        startTimer();
+      }, 500);
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timer = 10;
+      document.getElementById("timer").textContent = `⏱️ ${timer}`;
+      timerInterval = setInterval(() => {
+        timer--;
+        document.getElementById("timer").textContent = `⏱️ ${timer}`;
+        if (timer === 0) {
+          clearInterval(timerInterval);
+          checkAnswer(null);
+        }
+      }, 1000);
+    }
+
+    function submitAnswer() {
+      const val = parseInt(answerInputEl.value);
+      checkAnswer(val);
+    }
+
+    function createConfetti() {
+      const confettiContainer = document.getElementById('confetti-container');
+      for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'absolute';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+        confetti.style.top = '0px';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.opacity = 1;
+        confetti.style.borderRadius = '50%';
+        confetti.style.animation = `confetti-fall 2s forwards`;
+        confettiContainer.appendChild(confetti);
+        confetti.addEventListener('animationend', () => confetti.remove());
+      }
+    }
+
+    function shakeInput() {
+      answerInputEl.classList.add('shake');
+      setTimeout(() => {
+        answerInputEl.classList.remove('shake');
+      }, 500);
+    }
+
+    function checkAnswer(val) {
+      clearInterval(timerInterval);
+      total++;
+      const correct = (val === currentAnswer);
+      if (correct) {
+        score++;
+        document.getElementById("correctSound").play();
+        createConfetti();
+      } else {
+        document.getElementById("wrongSound").play();
+        shakeInput();
+      }
+
+      document.getElementById("scoreDisplay").textContent = `Score: ${score} / ${total}`;
+
+      if (total >= 10) {
+        setTimeout(() => {
+          alert(`🎉 ${name}, you got ${score}/10 correct!`);
+          localStorage.setItem(`score_level_${level}`, score);
+          window.location.href = "result.html"; // Go to result screen
+        }, 800);
+      } else {
+        setTimeout(generateQuestion, 1200);
+      }
+    }
+
+    // Start game
+    generateQuestion();
+  </script>
+  <img src="logo.png" width="150" alt="Math Game Logo" class="logo" />
+</body>
+</html>
