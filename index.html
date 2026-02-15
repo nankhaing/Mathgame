@@ -3,52 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Math For Kids - Menu</title>
+    <title>Easy Math For Kids</title>
     <style>
         body { font-family: 'Arial', sans-serif; text-align: center; background: #e3f2fd; margin: 0; padding: 20px; }
-        .menu-card { background: white; max-width: 400px; margin: 50px auto; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        h1 { color: #1565c0; font-size: 28px; }
-        .subtitle { color: #666; margin-bottom: 30px; }
         
-        .level-list { display: flex; flex-direction: column; gap: 15px; }
-        .level-btn { 
-            display: block; 
-            padding: 15px; 
-            background: #fff; 
-            color: #1565c0; 
-            text-decoration: none; 
-            border: 2px solid #90caf9; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-        .level-btn:hover { background: #1565c0; color: white; transform: translateY(-3px); }
+        .container { background: white; max-width: 400px; margin: 30px auto; padding: 30px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* Level အလိုက် အရောင်လေးတွေ ခွဲထားပေးပါတယ် */
-        .level-1 { border-color: #4caf50; color: #4caf50; }
-        .level-1:hover { background: #4caf50; color: white; }
-        .level-4 { border-color: #ff9800; color: #ff9800; }
-        .level-4:hover { background: #ff9800; color: white; }
-        .level-6 { border-color: #f44336; color: #f44336; }
-        .level-6:hover { background: #f44336; color: white; }
+        /* Logo Style */
+        .game-logo { width: 80px; height: 80px; background: #1565c0; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; margin: 0 auto 15px; box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3); }
+
+        h1 { color: #1565c0; font-size: 24px; margin-bottom: 5px; }
+        .subtitle { color: #666; margin-bottom: 25px; font-size: 14px; }
+
+        /* Login Form */
+        #login-container { margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 15px; }
+        input { font-size: 16px; padding: 12px; width: 80%; border: 2px solid #ddd; border-radius: 10px; outline: none; margin-bottom: 10px; text-align: center; }
+        .start-btn { background: #4caf50; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 90%; }
+
+        /* Level Selection (Hidden initially) */
+        #level-selection { display: none; flex-direction: column; gap: 12px; }
+        .level-btn { padding: 15px; background: #fff; color: #1565c0; text-decoration: none; border: 2px solid #90caf9; border-radius: 12px; font-weight: bold; transition: 0.2s; }
+        .level-btn:hover { background: #1565c0; color: white; }
     </style>
 </head>
 <body>
 
-<div class="menu-card">
-    <h1>🎮 Easy Math For Kids</h1>
-    <p class="subtitle">Select Your Level</p>
+<div class="container">
+    <div class="game-logo">➕</div>
+    <h1>Easy Math For Kids</h1>
+    <p class="subtitle">Learning is Fun!</p>
 
-    <div class="level-list">
-        <a href="play.html?level=1" class="level-btn level-1">Level 1: Add</a>
+    <div id="login-container">
+        <p style="font-weight: bold; color: #333;">Enter your name to start:</p>
+        <input type="text" id="player-name" placeholder="Your Name here..." autocomplete="off">
+        <button class="start-btn" onclick="showLevels()">Start Game</button>
+    </div>
+
+    <div id="level-selection">
+        <p id="welcome-msg" style="font-weight: bold; color: #4caf50;"></p>
+        <a href="play.html?level=1" class="level-btn">Level 1: Add</a>
         <a href="play.html?level=2" class="level-btn">Level 2: Subtract</a>
         <a href="play.html?level=3" class="level-btn">Level 3: Add & Subtract</a>
-        <a href="play.html?level=4" class="level-btn level-4">Level 4: Multiply</a>
+        <a href="play.html?level=4" class="level-btn">Level 4: Multiply</a>
         <a href="play.html?level=5" class="level-btn">Level 5: Mixed</a>
-        <a href="play.html?level=6" class="level-btn level-6">Level 6: Hard Mix</a>
+        <a href="play.html?level=6" class="level-btn" style="border-color: #f44336; color: #f44336;">Level 6: Hard Mix</a>
     </div>
 </div>
+
+<script>
+    function showLevels() {
+        const name = document.getElementById('player-name').value;
+        if (name.trim() !== "") {
+            // နာမည်ကို သိမ်းထားပြီး Level တွေကို ပြမယ်
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('level-selection').style.display = 'flex';
+            document.getElementById('welcome-msg').innerText = "Welcome, " + name + "! Choose a level:";
+            
+            // နာမည်ကို play.html ဆီပါ သယ်သွားချင်ရင် localStorage သုံးလို့ရတယ်
+            localStorage.setItem('playerName', name);
+        } else {
+            alert("Please enter your name!");
+        }
+    }
+</script>
 
 </body>
 </html>
