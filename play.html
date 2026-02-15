@@ -3,116 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Math For Kids</title>
+    <title>Math Game - Play</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #e0f7fa; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        #game-box { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 350px; }
-        h1 { color: #0288d1; font-size: 24px; margin-bottom: 20px; }
-        .level-info { font-weight: bold; color: #555; margin-bottom: 10px; }
-        .hearts { color: #ff5252; font-size: 28px; margin-bottom: 15px; }
-        #question { font-size: 56px; font-weight: bold; color: #333; margin: 25px 0; }
-        input { font-size: 28px; width: 100px; text-align: center; border: 4px solid #b3e5fc; border-radius: 15px; padding: 10px; outline: none; }
-        button { font-size: 20px; background: #00c853; color: white; border: none; padding: 12px 30px; border-radius: 15px; cursor: pointer; margin-top: 20px; transition: transform 0.1s; }
-        button:active { transform: scale(0.95); }
-        #score { font-size: 20px; color: #0288d1; margin-top: 15px; font-weight: bold; }
+        body { font-family: 'Arial', sans-serif; text-align: center; background: #e3f2fd; margin: 0; padding: 20px; }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 15px;
+            background: #607d8b;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .game-card { background: white; max-width: 400px; margin: 60px auto; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; }
+        .level-tag { background: #ff9800; color: white; padding: 5px 15px; border-radius: 15px; font-weight: bold; }
+        .hearts { color: #f44336; font-size: 25px; margin: 15px 0; }
+        #question { font-size: 60px; font-weight: bold; color: #1565c0; margin: 20px 0; }
+        input { font-size: 30px; width: 120px; text-align: center; border: 3px solid #90caf9; border-radius: 10px; padding: 10px; outline: none; }
+        .submit-btn { display: block; width: 100%; margin-top: 20px; padding: 15px; font-size: 20px; background: #4caf50; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .submit-btn:active { background: #388e3c; }
+        .score { margin-top: 15px; font-size: 18px; color: #555; }
     </style>
 </head>
 <body>
 
-<div id="game-box">
-    <h1>🎮 Easy Math For Kids</h1>
-    <div class="level-info" id="current-level-text">Level 1: Add</div>
-    <div class="hearts" id="lives">❤️❤️❤️</div>
+<a href="index.html" class="back-btn">⬅ Back</a>
+
+<div class="game-card">
+    <span class="level-tag" id="level-name">Level 1</span>
+    <div class="hearts" id="hearts">❤️❤️❤️</div>
     
-    <div id="question">? + ?</div>
-    <input type="number" id="answer" placeholder="?" autocomplete="off">
-    <br>
-    <button onclick="checkAnswer()">Submit</button>
+    <div id="question">--</div>
+    <input type="number" id="user-answer" placeholder="?" pattern="\d*" inputmode="numeric">
     
-    <div id="score">Score: 0</div>
+    <button class="submit-btn" onclick="check()">Submit</button>
+    <div class="score">Score: <span id="score">0</span></div>
 </div>
 
 <script>
-    // URL ကနေ ဘယ် Level ရွေးထားလဲဆိုတာ ဖတ်တာပါ
-    const urlParams = new URLSearchParams(window.location.search);
-    let level = parseInt(urlParams.get('level')) || 1;
-    
+    const params = new URLSearchParams(window.location.search);
+    const level = parseInt(params.get('level')) || 1;
     let score = 0;
     let lives = 3;
-    let num1, num2, correctAnswer, operator;
+    let currentAns;
 
-    function setupGame() {
-        const levels = {
-            1: "Level 1: Add",
-            2: "Level 2: Subtract",
-            3: "Level 3: Add & Subtract",
-            4: "Level 4: Multiply",
-            5: "Level 5: Mixed",
-            6: "Level 6: Hard Mix"
-        };
-        document.getElementById('current-level-text').innerText = levels[level];
-        generateQuestion();
-    }
+    // --- Sound Effects Logic ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function generateQuestion() {
-        let maxNum = level === 6 ? 20 : 10; // Hard Mix ဆိုရင် ကိန်းဂဏန်း ပိုကြီးမယ်
+    function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-        num1 = Math.floor(Math.random() * maxNum) + 1;
-        num2 = Math.floor(Math.random() * maxNum) + 1;
-
-        // Level အလိုက် Operator ရွေးချယ်မှု
-        if (level === 1) operator = '+';
-        else if (level === 2) operator = '-';
-        else if (level === 3) operator = Math.random() > 0.5 ? '+' : '-';
-        else if (level === 4) operator = '×';
-        else if (level === 5) {
-            let ops = ['+', '-', '×'];
-            operator = ops[Math.floor(Math.random() * ops.length)];
-        }
-        else {
-            let ops = ['+', '-', '×'];
-            operator = ops[Math.floor(Math.random() * ops.length)];
-        }
-
-        // အနှုတ်ဆိုရင် အဖြေ အနှုတ်မထွက်အောင် ကြီးတဲ့ကိန်းကို ရှေ့ထားမယ်
-        if (operator === '-' && num1 < num2) [num1, num2] = [num2, num1];
-
-        if (operator === '+') correctAnswer = num1 + num2;
-        if (operator === '-') correctAnswer = num1 - num2;
-        if (operator === '×') correctAnswer = num1 * num2;
-
-        document.getElementById('question').innerText = `${num1} ${operator} ${num2}`;
-        document.getElementById('answer').value = '';
-        document.getElementById('answer').focus();
-    }
-
-    function checkAnswer() {
-        const userAnswer = parseInt(document.getElementById('answer').value);
-        
-        if (userAnswer === correctAnswer) {
-            score += 10;
-            document.getElementById('score').innerText = `Score: ${score}`;
-            generateQuestion();
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
         } else {
-            lives--;
-            updateLives();
-            if (lives <= 0) {
-                alert("Game Over! Your Score: " + score);
-                window.location.href = 'index.html'; // ရှုံးရင် အစပြန်သွားမယ်
-            }
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
         }
     }
 
-    function updateLives() {
-        document.getElementById('lives').innerText = "❤️".repeat(lives);
+    // --- Game Logic ---
+    function nextQuestion() {
+        let n1, n2, op;
+        let max = 10; 
+
+        switch(level) {
+            case 1: op = '+'; break;
+            case 2: op = '-'; break;
+            case 3: op = Math.random() > 0.5 ? '+' : '-'; break;
+            case 4: op = '*'; max = 6; break;
+            case 5: 
+                op = ['+','-','*'][Math.floor(Math.random()*3)];
+                break;
+            case 6: 
+                op = ['+','-','*'][Math.floor(Math.random()*3)];
+                max = 20; 
+                break;
+        }
+
+        n1 = Math.floor(Math.random() * max) + 1;
+        n2 = Math.floor(Math.random() * max) + 1;
+        if (op === '-' && n1 < n2) [n1, n2] = [n2, n1];
+
+        if (op === '+') currentAns = n1 + n2;
+        if (op === '-') currentAns = n1 - n2;
+        if (op === '*') { currentAns = n1 * n2; op = '×'; }
+
+        document.getElementById('question').innerText = `${n1} ${op} ${n2}`;
+        document.getElementById('level-name').innerText = "Level " + level;
+        document.getElementById('user-answer').value = '';
+        document.getElementById('user-answer').focus();
     }
 
-    // Enter ခေါက်ရင်လည်း အဖြေစစ်လို့ရအောင်
-    document.getElementById('answer').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') checkAnswer();
+    function check() {
+        const input = document.getElementById('user-answer');
+        const ans = parseInt(input.value);
+        
+        if (ans === currentAns) {
+            playSound('correct');
+            score += 10;
+            document.getElementById('score').innerText = score;
+            nextQuestion();
+        } else {
+            playSound('wrong');
+            lives--;
+            document.getElementById('hearts').innerText = "❤️".repeat(lives);
+            if (lives <= 0) {
+                alert("Game Over! Final Score: " + score);
+                window.location.href = 'index.html';
+            }
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    document.getElementById('user-answer').addEventListener('keyup', (e) => {
+        if(e.key === 'Enter') check();
     });
 
-    setupGame();
+    nextQuestion();
 </script>
 
 </body>
