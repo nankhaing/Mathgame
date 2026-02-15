@@ -1,143 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Game Result - Easy Math For Kids</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #fff5f5;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow: enable;
-    }
-    .result-box {
-      background: white;
-      padding: 30px 25px;
-      border-radius: 20px;
-      max-width: 600px;
-      width: 90%;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeSlideUp 0.8s forwards;
-    }
-    h2 {
-      color: #2c3e50;
-      margin-bottom: 10px;
-      font-size: 32px;
-    }
-    .stars {
-      font-size: 40px;
-      margin: 15px 0;
-      color: gold;
-      user-select: none;
-      animation: starPulse 1.5s infinite alternate;
-    }
-    .history-table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-    .history-table th, .history-table td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      font-size: 18px;
-    }
-    .btn-group {
-      margin-top: 15px;
-    }
-    button {
-      padding: 14px 28px;
-      font-size: 18px;
-      margin: 10px 15px;
-      border: none;
-      border-radius: 12px;
-      background: #00796b;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    button:hover {
-      background-color: #004d40;
-      transform: scale(1.05);
-    }
-
-    @keyframes fadeSlideUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    @keyframes starPulse {
-      from { text-shadow: 0 0 5px gold; }
-      to { text-shadow: 0 0 20px gold; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Game - Result</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background: #e3f2fd; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .result-card { background: white; width: 100%; max-width: 400px; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #f44336; font-size: 32px; margin-bottom: 10px; }
+        .score-box { font-size: 48px; font-weight: bold; color: #1565c0; margin: 20px 0; }
+        .message { font-size: 18px; color: #555; margin-bottom: 30px; }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+        .btn { padding: 15px; font-size: 18px; border: none; border-radius: 12px; cursor: pointer; text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .play-again { background: #4caf50; color: white; }
+        .play-again:hover { background: #388e3c; }
+        .home { background: #90caf9; color: #1565c0; }
+        .home:hover { background: #64b5f6; color: white; }
+    </style>
 </head>
 <body>
-  <div class="result-box">
-    <h2 id="resultTitle">Game Result</h2>
-    <p id="summaryText"></p>
-    <div class="stars" id="stars">⭐</div>
-    <h3>Previous Scores</h3>
-    <table class="history-table" id="historyTable">
-      <tr><th>Name</th><th>Level</th><th>Score</th></tr>
-    </table>
-<img src="logo.png" width="250" alt="Math Game Logo" class="logo" />
+
+<div class="result-card">
+    <h1>Game Over!</h1>
+    <p class="message">Great effort! Your score is:</p>
+    <div class="score-box" id="final-score">0</div>
+    
     <div class="btn-group">
-      <button onclick="playAgain()">🔁 Play Again</button>
-      <button onclick="goHome()">🏠 Back to Menu</button>
+        <a href="index.html" class="btn play-again">Play Again</a>
+        <a href="index.html" class="btn home">Back to Menu</a>
     </div>
-  </div>
+</div>
 
-  <script>
-    const name = localStorage.getItem('math_player') || "Player";
-    const level = parseInt(localStorage.getItem('math_level') || "1");
-    const score = parseInt(localStorage.getItem(`score_level_${level}`) || "0");
+<script>
+    // URL ကနေ Score ကို ဖတ်တာပါ (ဥပမာ: result.html?score=150)
+    const params = new URLSearchParams(window.location.search);
+    const score = params.get('score') || 0;
+    document.getElementById('final-score').innerText = score;
+</script>
 
-    document.getElementById("resultTitle").textContent = `🎉 Well Done, ${name}!`;
-    document.getElementById("summaryText").textContent = `You scored ${score} out of 10 in Level ${level}`;
-
-    function showStars(score) {
-      let starCount = 0;
-      if (score >= 9) starCount = 3;
-      else if (score >= 6) starCount = 2;
-      else if (score >= 3) starCount = 1;
-      document.getElementById("stars").textContent = "⭐".repeat(starCount) || "❌";
-    }
-
-    function updateHistory() {
-      const table = document.getElementById("historyTable");
-      for (let i = 1; i <= 6; i++) {
-        const s = localStorage.getItem(`score_level_${i}`);
-        if (s !== null) {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${name}</td><td>Level ${i}</td><td>${s}/10</td>`;
-          table.appendChild(row);
-        }
-      }
-    }
-
-    function playAgain() {
-      window.location.href = "play.html";
-    }
-
-    function goHome() {
-      window.location.href = "index.html";
-    }
-
-    showStars(score);
-    updateHistory();
-  
-  </script>
-  
 </body>
 </html>
