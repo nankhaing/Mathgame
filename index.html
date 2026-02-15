@@ -1,146 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Easy Math For Kids</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #e0f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-      overflow: enble;
-    }
-    .box {
-      background: white;
-      padding: 30px 25px;
-      border-radius: 20px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeSlideIn 0.8s forwards;
-    }
-    h1 {
-      font-size: 36px;
-      color: #00796b;
-      margin-bottom: 20px;
-      letter-spacing: 1.5px;
-    }
-    input, button {
-      font-size: 18px;
-      padding: 12px;
-      width: 100%;
-      margin: 12px 0;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      transition: box-shadow 0.3s ease, background-color 0.3s ease;
-    }
-    input:focus {
-      outline: none;
-      box-shadow: 0 0 10px #00796b;
-      border-color: #00796b;
-    }
-    button {
-      background-color: #00796b;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    button:hover:not(:disabled) {
-      background-color: #004d40;
-      transform: scale(1.05);
-    }
-    button:disabled {
-      background-color: #a5d6a7;
-      cursor: not-allowed;
-    }
-    #levelSelect {
-      margin-top: 15px;
-      opacity: 0;
-      max-height: 0;
-      overflow: disable;
-      transition: max-height 0.5s ease, opacity 0.5s ease;
-    }
-    #levelSelect.show {
-      opacity: 1;
-      max-height: 300px;
-    }
-    .level-btn {
-      display: block;
-      background: #00796b;
-      color: white;
-      border: none;
-      margin: 8px 0;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .level-btn:hover {
-      background-color: #004d40;
-      transform: scale(1.05);
-    }
-
-    @keyframes fadeSlideIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Math For Kids - Menu</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background: #e3f2fd; margin: 0; padding: 20px; }
+        .menu-card { background: white; max-width: 400px; margin: 50px auto; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        h1 { color: #1565c0; font-size: 28px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        
+        .level-list { display: flex; flex-direction: column; gap: 15px; }
+        .level-btn { 
+            display: block; 
+            padding: 15px; 
+            background: #fff; 
+            color: #1565c0; 
+            text-decoration: none; 
+            border: 2px solid #90caf9; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        .level-btn:hover { background: #1565c0; color: white; transform: translateY(-3px); }
+        
+        /* Level အလိုက် အရောင်လေးတွေ ခွဲထားပေးပါတယ် */
+        .level-1 { border-color: #4caf50; color: #4caf50; }
+        .level-1:hover { background: #4caf50; color: white; }
+        .level-4 { border-color: #ff9800; color: #ff9800; }
+        .level-4:hover { background: #ff9800; color: white; }
+        .level-6 { border-color: #f44336; color: #f44336; }
+        .level-6:hover { background: #f44336; color: white; }
+    </style>
 </head>
 <body>
-  <div class="box">
-    <!-- Game Logo -->
-  <img src="logo.png" width="250" alt="Math Game Logo" class="logo" />
-    <h3>🎮 Easy Math For Kids</h3>
-    <input type="text" id="playerName" placeholder="Enter your name" />
-    <button id="startBtn" onclick="saveName()" disabled>Start</button>
-    <div id="levelSelect">
-      <h5>Select Level</h5>
-      <button class="level-btn" onclick="selectLevel(1)">Level 1: Add</button>
-      <button class="level-btn" onclick="selectLevel(2)">Level 2: Subtract</button>
-      <button class="level-btn" onclick="selectLevel(3)">Level 3: Add & Subtract</button>
-      <button class="level-btn" onclick="selectLevel(4)">Level 4: Multiply</button>
-      <button class="level-btn" onclick="selectLevel(5)">Level 5: Mixed</button>
-      <button class="level-btn" onclick="selectLevel(6)">Level 6: Hard Mix</button>
+
+<div class="menu-card">
+    <h1>🎮 Easy Math For Kids</h1>
+    <p class="subtitle">Select Your Level</p>
+
+    <div class="level-list">
+        <a href="play.html?level=1" class="level-btn level-1">Level 1: Add</a>
+        <a href="play.html?level=2" class="level-btn">Level 2: Subtract</a>
+        <a href="play.html?level=3" class="level-btn">Level 3: Add & Subtract</a>
+        <a href="play.html?level=4" class="level-btn level-4">Level 4: Multiply</a>
+        <a href="play.html?level=5" class="level-btn">Level 5: Mixed</a>
+        <a href="play.html?level=6" class="level-btn level-6">Level 6: Hard Mix</a>
     </div>
-  </div>
-  <script>
-    const playerNameInput = document.getElementById("playerName");
-    const startBtn = document.getElementById("startBtn");
-    const levelSelect = document.getElementById("levelSelect");
+</div>
 
-    playerNameInput.addEventListener('input', () => {
-      startBtn.disabled = playerNameInput.value.trim() === "";
-    });
-
-    function saveName() {
-      const name = playerNameInput.value.trim();
-      if (!name) {
-        alert("Please enter your name!");
-        return;
-      }
-      localStorage.setItem("math_player", name);
-      levelSelect.classList.add('show');
-      startBtn.style.display = 'none';
-      playerNameInput.disabled = true;
-    }
-
-    function selectLevel(level) {
-      localStorage.setItem("math_level", level);
-      window.location.href = "play.html";
-    }
-  </script>
 </body>
 </html>
